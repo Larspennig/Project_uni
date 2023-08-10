@@ -125,6 +125,7 @@ layer_scores = {concept_pair: {layer: {'scores': [], 'total': []}
 layer_magnitude = {concept_pair: {layer: {'scores': [], 'total': []}
                                   for layer in layers} for concept_pair in setup_list}
 
+counter = 0
 
 # iterate over dataset and compute TCAV scores
 num_batches = len(test_dataloader)
@@ -141,6 +142,16 @@ for idx, batch in enumerate(test_dataloader):
                                                                [layer]['sign_count'])
             layer_magnitude[concept_pair][layer]['scores'].append(tcav_scores[concept_pair]
                                                                   [layer]['magnitude'])
+    counter += 1
+    # checkpoints
+    if counter == 1000:
+        with open(out_folder+f'layer_scores{idx}.pkl', 'wb') as f:
+            pickle.dump(layer_scores, f)
+
+        with open(out_folder+f'layer_magnitude{idx}.pkl', 'wb') as f:
+            pickle.dump(layer_magnitude, f)
+
+        counter = 0
 
 
 # Compute overall score per layer and normalize
